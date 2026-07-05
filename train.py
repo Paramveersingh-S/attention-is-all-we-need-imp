@@ -79,6 +79,8 @@ def train_epoch(model, dataloader, optimizer, criterion, scaler, config, epoch, 
         
         if (batch_idx + 1) % config.train.gradient_accumulation_steps == 0:
             optimizer.update_lr()
+            scaler.unscale_(optimizer.optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             scaler.step(optimizer.optimizer)
             scaler.update()
             optimizer.optimizer.zero_grad()

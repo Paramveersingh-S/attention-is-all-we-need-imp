@@ -76,6 +76,8 @@ def main():
             
             scaler.scale(loss).backward()
             scheduler.update_lr()
+            scaler.unscale_(scheduler.optimizer)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             scaler.step(scheduler.optimizer)
             scaler.update()
             scheduler.optimizer.zero_grad()
