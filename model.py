@@ -47,8 +47,7 @@ class MultiHeadAttention(nn.Module):
         K = self.W_k(k).view(batch_size, -1, self.n_heads, self.d_k).transpose(1, 2)
         V = self.W_v(v).view(batch_size, -1, self.n_heads, self.d_k).transpose(1, 2)
         
-        if mask is not None:
-            mask = mask.unsqueeze(1)
+        # mask is already shaped properly from make_src_mask/make_tgt_mask
             
         x, attn = self.scaled_dot_product_attention(Q, K, V, mask)
         

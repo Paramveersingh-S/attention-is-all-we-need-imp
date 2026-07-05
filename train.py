@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.cuda.amp import autocast, GradScaler
+from torch.amp import autocast, GradScaler
 import os
 import time
 from config import Config
@@ -66,7 +66,7 @@ def train_epoch(model, dataloader, optimizer, criterion, scaler, config, epoch, 
         tgt_input = tgt[:, :-1]
         tgt_expected = tgt[:, 1:]
         
-        with autocast(enabled=(config.train.device == 'cuda')):
+        with autocast('cuda', enabled=(config.train.device == 'cuda')):
             out, _ = model(src, tgt_input)
             loss = criterion(out.contiguous().view(-1, out.size(-1)), 
                              tgt_expected.contiguous().view(-1))

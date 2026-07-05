@@ -2,7 +2,7 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.cuda.amp import GradScaler
+from torch.amp import GradScaler
 from config import Config
 from data import get_dataloaders
 from model import Transformer
@@ -30,7 +30,7 @@ def main():
     
     optimizer = optim.Adam(model.parameters(), lr=0, betas=(0.9, 0.98), eps=1e-9)
     scheduler = NoamOpt(config.model.d_model, config.train.learning_rate_scale, config.train.warmup_steps, optimizer)
-    scaler = GradScaler(enabled=(config.train.device == 'cuda'))
+    scaler = GradScaler('cuda', enabled=(config.train.device == 'cuda'))
     
     start_epoch = load_checkpoint(model, scheduler, config)
     
