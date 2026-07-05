@@ -54,17 +54,19 @@ def collate_fn(batch: List[Dict[str, List[int]]], pad_id: int):
     
     return src_padded, tgt_padded
 
-def train_tokenizer(dataset, lang: str, vocab_size: int, special_tokens: List[str]) -> Tokenizer:
+def train_joint_tokenizer(dataset, lang1: str, lang2: str) -> Tokenizer:
     tokenizer = Tokenizer(BPE(unk_token="[UNK]"))
     tokenizer.pre_tokenizer = Whitespace()
-    trainer = BpeTrainer(vocab_size=vocab_size, special_tokens=special_tokens)
+    trainer = BpeTrainer(special_tokens=["[UNK]", "[PAD]", "[SOS]", "[EOS]"], vocab_size=32000)
     
     def iterator():
         for item in dataset:
             if 'translation' in item:
-                yield item['translation'][lang]
+                yield item['translation'][lang1]
+                yield item['translation'][lang2]
             else:
-                yield item[lang]
+                yield item[lang1]
+                yield item[lang2]
             
     tokenizer.train_from_iterator(iterator(), trainer)
     return tokenizer
@@ -84,8 +86,9 @@ def get_dataloaders(config: Config) -> Tuple[DataLoader, DataLoader, Tokenizer, 
         src_tokenizer = Tokenizer.from_file(src_tok_path)
         tgt_tokenizer = Tokenizer.from_file(tgt_tok_path)
     else:
-        src_tokenizer = train_tokenizer(dataset, 'en', config.model.vocab_size, special_tokens)
-        tgt_tokenizer = train_tokenizer(dataset, 'de', config.model.vocab_size, special_tokens)
+        tokenizer = train_joint_tokenizer(dataset, "en", "de")
+        src_tokenizer = tokenizer
+        tgt_tokenizer = tokenizer
         src_tokenizer.save(src_tok_path)
         tgt_tokenizer.save(tgt_tok_path)
         
