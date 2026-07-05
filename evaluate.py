@@ -1,7 +1,7 @@
 import torch
 import matplotlib.pyplot as plt
 import seaborn as sns
-from .utils import logger
+from utils import logger
 import os
 
 def generate_translation(model, src_sentence, src_tokenizer, tgt_tokenizer, config, max_len=50):

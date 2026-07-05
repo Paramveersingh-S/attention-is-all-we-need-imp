@@ -7,7 +7,7 @@ from tokenizers.pre_tokenizers import Whitespace
 from datasets import load_dataset
 import os
 from typing import List, Tuple, Dict, Any
-from .config import Config
+from config import Config
 
 class TranslationDataset(Dataset):
     def __init__(self, data, src_tokenizer, tgt_tokenizer, max_len):

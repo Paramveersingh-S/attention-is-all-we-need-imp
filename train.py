@@ -4,9 +4,9 @@ import torch.optim as optim
 from torch.cuda.amp import autocast, GradScaler
 import os
 import time
-from .config import Config
-from .utils import logger
-from .model import Transformer
+from config import Config
+from utils import logger
+from model import Transformer
 
 class NoamOpt:
     """Optim wrapper that implements rate."""
