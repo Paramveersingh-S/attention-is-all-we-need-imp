@@ -69,8 +69,12 @@ def evaluate_bleu(model, dataloader, src_tokenizer, tgt_tokenizer, config):
     for idx, item in enumerate(dataloader.dataset.data):
         if idx >= eval_limit: break
         
-        src_text = item['translation']['en']
-        ref_text = item['translation']['de']
+        if 'translation' in item:
+            src_text = item['translation']['en']
+            ref_text = item['translation']['de']
+        else:
+            src_text = item['en']
+            ref_text = item['de']
         
         hyp_text, _ = generate_translation(model, src_text, src_tokenizer, tgt_tokenizer, config)
         

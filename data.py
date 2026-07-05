@@ -21,8 +21,12 @@ class TranslationDataset(Dataset):
 
     def __getitem__(self, idx):
         item = self.data[idx]
-        src_text = item['translation']['en']
-        tgt_text = item['translation']['de']
+        if 'translation' in item:
+            src_text = item['translation']['en']
+            tgt_text = item['translation']['de']
+        else:
+            src_text = item['en']
+            tgt_text = item['de']
         
         src_encoded = self.src_tokenizer.encode(src_text).ids
         tgt_encoded = self.tgt_tokenizer.encode(tgt_text).ids
@@ -57,15 +61,18 @@ def train_tokenizer(dataset, lang: str, vocab_size: int, special_tokens: List[st
     
     def iterator():
         for item in dataset:
-            yield item['translation'][lang]
+            if 'translation' in item:
+                yield item['translation'][lang]
+            else:
+                yield item[lang]
             
     tokenizer.train_from_iterator(iterator(), trainer)
     return tokenizer
 
 def get_dataloaders(config: Config) -> Tuple[DataLoader, DataLoader, Tokenizer, Tokenizer]:
     # Try loading a popular translation dataset from HF
-    dataset = load_dataset("wmt14", "de-en", split="train[:50000]") # Using subset for fast training
-    val_dataset = load_dataset("wmt14", "de-en", split="validation")
+    dataset = load_dataset("bentrevett/multi30k", split="train") 
+    val_dataset = load_dataset("bentrevett/multi30k", split="validation")
     
     special_tokens = ["[UNK]", "[PAD]", "[SOS]", "[EOS]"]
     
