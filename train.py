@@ -18,13 +18,12 @@ class NoamOpt:
         self.model_size = model_size
         self._rate = 0
         
-    def step(self):
+    def update_lr(self):
         self._step += 1
         rate = self.rate()
         for p in self.optimizer.param_groups:
             p['lr'] = rate
         self._rate = rate
-        self.optimizer.step()
         
     def rate(self, step = None):
         if step is None:
@@ -53,7 +52,10 @@ class LabelSmoothingLoss(nn.Module):
         if mask.dim() > 0:
             true_dist.index_fill_(0, mask.squeeze(), 0.0)
         self.true_dist = true_dist
-        return self.criterion(x, true_dist.requires_grad_(False))
+        
+        loss = self.criterion(x, true_dist.requires_grad_(False))
+        non_pad_tokens = (target != self.padding_idx).sum()
+        return loss / non_pad_tokens
 
 def train_epoch(model, dataloader, optimizer, criterion, scaler, config, epoch, pad_id):
     model.train()
@@ -76,6 +78,7 @@ def train_epoch(model, dataloader, optimizer, criterion, scaler, config, epoch, 
         scaler.scale(loss).backward()
         
         if (batch_idx + 1) % config.train.gradient_accumulation_steps == 0:
+            optimizer.update_lr()
             scaler.step(optimizer.optimizer)
             scaler.update()
             optimizer.optimizer.zero_grad()

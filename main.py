@@ -75,6 +75,7 @@ def main():
                              tgt_expected.contiguous().view(-1))
             
             scaler.scale(loss).backward()
+            scheduler.update_lr()
             scaler.step(scheduler.optimizer)
             scaler.update()
             scheduler.optimizer.zero_grad()
