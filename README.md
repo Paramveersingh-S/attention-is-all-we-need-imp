@@ -6,9 +6,9 @@
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![CUDA/MPS](https://img.shields.io/badge/Hardware-CUDA%20%7C%20MPS%20%7C%20CPU-orange.svg)
 
-An enterprise-grade, from-scratch PyTorch implementation of the seminal paper *"Attention Is All You Need"* (Vaswani et al., 2017).
+from-scratch PyTorch implementation of the seminal paper *"Attention Is All You Need"* (Vaswani et al., 2017).
 
-Unlike typical Jupyter Notebook implementations, this project is designed with Senior SDE (Software Development Engineer) best practices:
+Unlike typical Jupyter Notebook implementations, this project is designed with best practices:
 - **Modular Design:** Segregated modules for configuration, data, architecture, training, and evaluation.
 - **Type Safety:** Uses `dataclasses` for configurations and standard Python typing.
 - **Robust Training:** Includes custom Learning Rate Scheduling (Warmup + Decay), mixed precision (`torch.cuda.amp`), and gradient accumulation.
